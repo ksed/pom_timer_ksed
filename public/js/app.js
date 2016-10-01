@@ -30,7 +30,7 @@
     minutes.text(breakMinutes);
     seconds.text(breakSeconds);
     // hide the break button and start the timer
-    breakButton.hide();
+    // breakButton.hide();
     startTimer();
   }
   function startTimer() {
@@ -62,14 +62,17 @@
       timerInterval = null;
       if (!isOnBreak) {
         // disable the start button
-        startButton.attr('disabled', true);
+        startButton.hide();
         //unhide the break button
         breakButton.show();
+        breakButton.attr('disabled', false);
         options.hide();
         docTitle.text("Time for a break ;>)");
       } else {
         isOnBreak = false;
+        startButton.show();
         startButton.attr('disabled', false);
+        breakButton.hide();
         minutes.text(timerMinutes);
         seconds.text(timerSeconds);
         options.show();
@@ -77,7 +80,10 @@
       }
       return;
     }
-    if (minutes.text() == minutesTextAsNumber) { startButton.attr('disabled', true); }
+    if (minutes.text() == minutesTextAsNumber) {
+      startButton.attr('disabled', true);
+      breakButton.attr('disabled', true);
+    }
     if (secondsTextAsNumber === 0) {
       // then change seconds text to 59 otherwise keep going
       if (minutesTextAsNumber !== 0) {
