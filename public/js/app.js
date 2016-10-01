@@ -1,10 +1,11 @@
-// var age = prompt("How old are you?");
+// iife tab
 (function() {
-  //initialize variables
+  // ### Initialize variables ###
   var startButton = $('#start');
   var breakButton = $('#break');
   var pauseButton = $('#pause');
   var resetButton = $('#reset');
+  var timerButton = $('#set-timer');
   var options = $('#options');
   var seconds = $('#seconds');
   var minutes = $('#minutes');
@@ -15,18 +16,19 @@
   var pTag;
   var timerInterval;
   var isOnBreak = false;
-  var timerMinutes = '00';
-  var timerSeconds = '05';
-  var breakMinutes = '00';
-  var breakSeconds = '03';
+  var timerMinutes = '25';
+  var timerSeconds = '00';
+  var breakMinutes = '05';
+  var breakSeconds = '00';
 
-  //main functionality
+  // ### Document element behaviors ###
   startButton.on('click', startTimer);
   breakButton.on('click', startBreak);
   pauseButton.on('click', pauseTimer);
   resetButton.on('click', resetTimer);
+  timerButton.on('click', setTimer);
 
-  //function definitions
+  // ### Main Function definitions ###
   function startBreak() {
     // set isOnBreak true
     isOnBreak = true;
@@ -37,27 +39,63 @@
     // breakButton.hide();
     startTimer();
   }
+
   function startTimer() {
+    if (logCount === 0 && minutes.text() === timerMinutes && seconds.text() === timerSeconds) {
+      logEvent('setTimer');
+    }
     if (!timerInterval) {
       setDocTitle();
       logEvent('began');
+      startButton.attr('disabled', true);
+      breakButton.attr('disabled', true);
+      timerButton.attr('disabled', true);
       timerInterval = setInterval(countdown, 1000);
     }
   }
+
   function pauseTimer() {
     clearInterval(timerInterval);
     timerInterval = null;
-    logEvent('paused');
+    logEvent('was paused with '+minutes.text()+':'+seconds.text()+' left');
     startButton.attr('disabled', false);
   }
+
   function resetTimer() {
     clearInterval(timerInterval);
     timerInterval = null;
-    logEvent('reset')
+    logEvent('was reset with '+minutes.text()+':'+seconds.text()+' left');
     minutes.text(timerMinutes);
     seconds.text(timerSeconds);
-    startTimer();
+    startButton.attr('disabled', false);
+    timerButton.attr('disabled', false);
   }
+
+  function setTimer() {
+    var minutesEnteredAsText = prompt('How many minutes do you want to set for WORK?', '25');
+    var minutesEnteredAsNumber = parseInt(minutesEnteredAsText);
+    if ( minutesEnteredAsNumber < 4*60 ) {
+      timerMinutes = pad(minutesEnteredAsNumber);
+      timerSeconds = '00';
+      minutes.text(timerMinutes);
+      seconds.text(timerSeconds);
+      minutesEnteredAsText = prompt('How many minutes to you want to set for your BREAK?', '5');
+      if ( minutesEnteredAsNumber < 4*60 ) {
+        breakMinutes = pad(minutesEnteredAsNumber);
+        breakSeconds = '00';
+        logEvent('setTimer');
+      } else {
+        logEvent('setTimer');
+        alertUser('BREAK time');
+      }
+    } else {
+      alertUser('WORK or BREAK times');
+    }
+    function alertUser(varsNotChanged) {
+      alert('No changes made to '+varsNotChanged+'. Time entered was either invalid or for 4 hours or more. Please try again.');
+    }
+  }
+
   function countdown(){
     var secondsText = seconds.text();
     var secondsTextAsNumber = parseInt(secondsText);
@@ -80,6 +118,7 @@
         isOnBreak = false;
         startButton.show();
         startButton.attr('disabled', false);
+        timerButton.attr('disabled', false);
         breakButton.hide();
         minutes.text(timerMinutes);
         seconds.text(timerSeconds);
@@ -87,10 +126,6 @@
         docTitle.text("Ready to resume? :>)");
       }
       return;
-    }
-    if (minutes.text() == minutesTextAsNumber) {
-      startButton.attr('disabled', true);
-      breakButton.attr('disabled', true);
     }
     if (secondsTextAsNumber === 0) {
       // then change seconds text to 59 otherwise keep going
@@ -107,25 +142,24 @@
       seconds.text(padSecondsTextAsNumber);
     }
     setDocTitle();
-    // var secondsValue = parseInt(seconds.text());
-    // seconds.text( pad( secondsValue - 1 ) );
   }
 
+  // ### Helper function definitions ###
   function pad(num) {
     if (num < 10) {
       // spit out the number with a leading zero
       return "0" + num;
     } else {
       // spit out the original number
-      return num;
+      return "" + num;
     }
   }
 
   function setDocTitle() {
     if (isOnBreak) {
-      docTitle.text( minutes.text()+':'+seconds.text()+' (On Break)' );
+      docTitle.text( minutes.text()+':'+seconds.text()+' left (On Break)' );
     } else {
-      docTitle.text( minutes.text()+':'+seconds.text()+' (Working)' );
+      docTitle.text( minutes.text()+':'+seconds.text()+' left (Working)' );
     }
   }
 
@@ -135,12 +169,20 @@
       pTag = document.createElement('P');
       pTag.id = logCount;
       if (isOnBreak) {
-        pTag.appendChild( document.createTextNode( 'Break '+startEnd+': '+curTime ) );
+        pTag.appendChild( document.createTextNode( 'Break timer began: '+curTime ) );
 
       } else {
-        pTag.appendChild( document.createTextNode( 'Work '+startEnd+': '+curTime ) );
+        pTag.appendChild( document.createTextNode( 'Work timer started: '+curTime ) );
       }
       document.body.appendChild( pTag );
+    } else if (startEnd === 'setTimer') {
+      pTag = document.createElement('P');
+      pTag.id = logCount;
+      var logText = 'Timer settings: '+timerMinutes+':'+timerSeconds+' (work), ';
+      logText += breakMinutes+':'+breakSeconds+' (break).';
+      pTag.appendChild( document.createTextNode( logText ) );
+      document.body.appendChild( pTag );
+      logCount++;
     } else {
       pTag = $('#'+logCount);
       pTag.text( pTag.text()+' ..... and '+startEnd+': '+curTime );
