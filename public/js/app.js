@@ -9,6 +9,10 @@
   var seconds = $('#seconds');
   var minutes = $('#minutes');
   var docTitle = $(document).find('title');
+  var timerLog = $('#timer-log');
+  var curTime = new Date().toLocaleString();
+  var logCount = 0;
+  var pTag;
   var timerInterval;
   var isOnBreak = false;
   var timerMinutes = '00';
@@ -36,17 +40,20 @@
   function startTimer() {
     if (!timerInterval) {
       setDocTitle();
+      logEvent('began');
       timerInterval = setInterval(countdown, 1000);
     }
   }
   function pauseTimer() {
     clearInterval(timerInterval);
     timerInterval = null;
+    logEvent('paused');
     startButton.attr('disabled', false);
   }
   function resetTimer() {
     clearInterval(timerInterval);
     timerInterval = null;
+    logEvent('reset')
     minutes.text(timerMinutes);
     seconds.text(timerSeconds);
     startTimer();
@@ -60,6 +67,7 @@
       // stop the timer and decide if isOnBreak or not what to show/hide
       clearInterval(timerInterval);
       timerInterval = null;
+      logEvent('ended');
       if (!isOnBreak) {
         // disable the start button
         startButton.hide();
@@ -115,9 +123,28 @@
 
   function setDocTitle() {
     if (isOnBreak) {
-      docTitle.text( 'OnBreak: '+minutes.text()+':'+seconds.text() );
+      docTitle.text( minutes.text()+':'+seconds.text()+' (On Break)' );
     } else {
-      docTitle.text( 'Working: '+minutes.text()+':'+seconds.text() );
+      docTitle.text( minutes.text()+':'+seconds.text()+' (Working)' );
+    }
+  }
+
+  function logEvent(startEnd) {
+    curTime = new Date().toLocaleString();
+    if (startEnd === 'began') {
+      pTag = document.createElement('P');
+      pTag.id = logCount;
+      if (isOnBreak) {
+        pTag.appendChild( document.createTextNode( 'Break '+startEnd+': '+curTime ) );
+
+      } else {
+        pTag.appendChild( document.createTextNode( 'Work '+startEnd+': '+curTime ) );
+      }
+      document.body.appendChild( pTag );
+    } else {
+      pTag = $('#'+logCount);
+      pTag.text( pTag.text()+' ..... and '+startEnd+': '+curTime );
+      logCount++;
     }
   }
 }());

@@ -3,18 +3,21 @@
 }
 
 #start {
-  font-size: 750%;
+  font-size: 500%;
 }
 
 #break {
-  font-size: 750%;
+  font-size: 500%;
   display: none;
 }
 
 #pause {
-  font-size: 300%;
+  font-size: 150%;
+  background-color: darkorange;
+  color: black;
 }
 
 #reset {
-  font-size: 300%;
+  font-size: 150%;
+  background-color: red;
 }
