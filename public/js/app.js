@@ -11,10 +11,10 @@
   var docTitle = $(document).find('title');
   var timerInterval;
   var isOnBreak = false;
-  var timerMinutes = '25';
-  var timerSeconds = '00';
-  var breakMinutes = '05';
-  var breakSeconds = '00';
+  var timerMinutes = '00';
+  var timerSeconds = '05';
+  var breakMinutes = '00';
+  var breakSeconds = '03';
 
   //main functionality
   startButton.on('click', startTimer);
@@ -66,12 +66,14 @@
         //unhide the break button
         breakButton.show();
         options.hide();
+        docTitle.text("Time for a break ;>)");
       } else {
         isOnBreak = false;
         startButton.attr('disabled', false);
         minutes.text(timerMinutes);
         seconds.text(timerSeconds);
         options.show();
+        docTitle.text("Ready to resume? :>)");
       }
       return;
     }
