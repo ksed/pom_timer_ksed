@@ -14,6 +14,7 @@
   var curTime = new Date().toLocaleString();
   var logCount = 0;
   var pTag;
+  var lastButton = '';
   var timerInterval;
   var isOnBreak = false;
   var timerMinutes = '25';
@@ -42,19 +43,25 @@
 
   function startTimer() {
     if (logCount === 0 && minutes.text() === timerMinutes && seconds.text() === timerSeconds) {
+      // Records the timer settings the first time the timer is run
       logEvent('setTimer');
     }
     if (!timerInterval) {
+      lastButton = 'work';
       setDocTitle();
       logEvent('began');
-      startButton.attr('disabled', true);
-      breakButton.attr('disabled', true);
-      timerButton.attr('disabled', true);
+      if (isOnBreak) {
+        breakButton.attr('disabled', true);
+      } else {
+        startButton.attr('disabled', true);
+        timerButton.attr('disabled', true);
+      }
       timerInterval = setInterval(countdown, 1000);
     }
   }
 
   function pauseTimer() {
+    lastButton = 'pause';
     clearInterval(timerInterval);
     timerInterval = null;
     logEvent('was paused with '+minutes.text()+':'+seconds.text()+' left');
@@ -62,6 +69,8 @@
   }
 
   function resetTimer() {
+    if (lastButton === 'pause') { logCount--; }
+    lastButton = 'reset';
     clearInterval(timerInterval);
     timerInterval = null;
     logEvent('was reset with '+minutes.text()+':'+seconds.text()+' left');
@@ -107,19 +116,19 @@
       timerInterval = null;
       logEvent('ended');
       if (!isOnBreak) {
-        // disable the start button
+        // hide the start button
         startButton.hide();
+        startButton.attr('disabled', false);
         //unhide the break button
         breakButton.show();
-        breakButton.attr('disabled', false);
         options.hide();
         docTitle.text("Time for a break ;>)");
       } else {
         isOnBreak = false;
         startButton.show();
-        startButton.attr('disabled', false);
         timerButton.attr('disabled', false);
         breakButton.hide();
+        breakButton.attr('disabled', false);
         minutes.text(timerMinutes);
         seconds.text(timerSeconds);
         options.show();
