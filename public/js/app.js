@@ -89,6 +89,7 @@
       minutes.text(timerMinutes);
       seconds.text(timerSeconds);
       minutesEnteredAsText = prompt('How many minutes to you want to set for your BREAK?', '5');
+      minutesEnteredAsNumber = parseInt(minutesEnteredAsText);
       if ( minutesEnteredAsNumber < 4*60 ) {
         breakMinutes = pad(minutesEnteredAsNumber);
         breakSeconds = '00';
