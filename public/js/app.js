@@ -12,6 +12,7 @@
   var docTitle = $(document).find('title');
   var timerLog = $('#timer-log');
   var curTime = new Date().toLocaleString();
+  var buttonStrings = [startButton.attr('title'), breakButton.attr('title'), timerButton.attr('title')];
   var logCount = 0;
   var pTag;
   var lastButton = '';
@@ -30,6 +31,7 @@
   timerButton.on('click', setTimer);
 
   // ### Main Function definitions ###
+  console.log(buttonStrings);
   function startBreak() {
     // set isOnBreak true
     isOnBreak = true;
@@ -52,9 +54,12 @@
       logEvent('began');
       if (isOnBreak) {
         breakButton.attr('disabled', true);
+        breakButton.attr('title', '');
       } else {
         startButton.attr('disabled', true);
         timerButton.attr('disabled', true);
+        startButton.attr('title', '');
+        timerButton.attr('title', 'Unavailable while running.');
       }
       timerInterval = setInterval(countdown, 1000);
     }
@@ -66,6 +71,7 @@
     timerInterval = null;
     logEvent('was paused with '+minutes.text()+':'+seconds.text()+' left');
     startButton.attr('disabled', false);
+    startButton.attr('title', buttonStrings[0]);
   }
 
   function resetTimer() {
@@ -78,6 +84,8 @@
     seconds.text(timerSeconds);
     startButton.attr('disabled', false);
     timerButton.attr('disabled', false);
+    startButton.attr('title', buttonStrings[0]);
+    timerButton.attr('title', buttonStrings[2]);
   }
 
   function setTimer() {
@@ -120,6 +128,7 @@
         // hide the start button
         startButton.hide();
         startButton.attr('disabled', false);
+        startButton.attr('title', buttonStrings[0]);
         //unhide the break button
         breakButton.show();
         options.hide();
@@ -128,8 +137,10 @@
         isOnBreak = false;
         startButton.show();
         timerButton.attr('disabled', false);
+        timerButton.attr('title', buttonStrings[2]);
         breakButton.hide();
         breakButton.attr('disabled', false);
+        breakButton.attr('title', buttonStrings[1]);
         minutes.text(timerMinutes);
         seconds.text(timerSeconds);
         options.show();
