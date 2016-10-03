@@ -188,8 +188,8 @@
     } else if (startEnd === 'setTimer') {
       pTag = document.createElement('P');
       pTag.id = logCount;
-      var logText = 'Timer settings: '+timerMinutes+':'+timerSeconds+' (work), ';
-      logText += breakMinutes+':'+breakSeconds+' (break).';
+      var logText = 'Timer settings: '+timerMinutes+':'+timerSeconds+' for work, ';
+      logText += breakMinutes+':'+breakSeconds+' for your break.';
       pTag.appendChild( document.createTextNode( logText ) );
       document.body.appendChild( pTag );
       logCount++;

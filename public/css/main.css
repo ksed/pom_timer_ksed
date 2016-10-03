@@ -1,3 +1,8 @@
+body {
+  padding-left: 1%;
+  background-image: url('../images/faded-pomodoro-timer_600.jpg');
+}
+
 #timer {
   font-size: 1800%;
 }
