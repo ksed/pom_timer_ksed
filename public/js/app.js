@@ -12,7 +12,7 @@
   var docTitle = $(document).find('title');
   var timerLog = $('#timer-log');
   var curTime = new Date().toLocaleString();
-  var buttonStrings = [startButton.attr('title'), breakButton.attr('title'), timerButton.attr('title')];
+  var buttonStrings = [startButton.attr('title'), breakButton.attr('title'), timerButton.attr('title'), 'Unavailable while running.'];
   var logCount = 0;
   var pTag;
   var lastButton = '';
@@ -54,12 +54,12 @@
       logEvent('began');
       if (isOnBreak) {
         breakButton.attr('disabled', true);
-        breakButton.attr('title', '');
+        breakButton.attr('title', buttonStrings[3]);
       } else {
         startButton.attr('disabled', true);
         timerButton.attr('disabled', true);
-        startButton.attr('title', '');
-        timerButton.attr('title', 'Unavailable while running.');
+        startButton.attr('title', buttonStrings[3]);
+        timerButton.attr('title', buttonStrings[3]);
       }
       timerInterval = setInterval(countdown, 1000);
     }
