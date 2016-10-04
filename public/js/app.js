@@ -55,6 +55,8 @@
       } else {
         startButton.attr('disabled', true);
         timerButton.attr('disabled', true);
+        pauseButton.attr('disabled', false);
+        resetButton.attr('disabled', false);
         startButton.attr('title', buttonStrings[3]);
         timerButton.attr('title', buttonStrings[3]);
       }
@@ -156,6 +158,8 @@
         breakButton.hide();
         breakButton.attr('disabled', false);
         breakButton.attr('title', buttonStrings[1]);
+        pauseButton.attr('disabled', true);
+        resetButton.attr('disabled', true);
         // set the work minutes and seconds
         minutes.text(timerMinutes);
         seconds.text(timerSeconds);
@@ -234,5 +238,8 @@
       // increment the paragraph count
       logCount++;
     }
+  }
+  function buttonDisabled(buttton, isDisabled) {
+
   }
 }());
