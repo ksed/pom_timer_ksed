@@ -31,7 +31,6 @@
   timerButton.on('click', setTimer);
 
   // ### Main Function definitions ###
-  console.log(buttonStrings);
   function startBreak() {
     // set isOnBreak true
     isOnBreak = true;
