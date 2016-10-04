@@ -34,11 +34,7 @@
   function startBreak() {
     // set isOnBreak true
     isOnBreak = true;
-    // set the break minutes and seconds
-    minutes.text(breakMinutes);
-    seconds.text(breakSeconds);
-    // hide the break button and start the timer
-    // breakButton.hide();
+    // start the timer
     startTimer();
   }
 
@@ -48,9 +44,11 @@
       logEvent('setTimer');
     }
     if (!timerInterval) {
+      // if the timer isn't already running, set the tab text and initialize the session log
       lastButton = 'work';
       setDocTitle();
       logEvent('began');
+      // use isOnBreak to decide which buttons to disable and adjust the title's
       if (isOnBreak) {
         breakButton.attr('disabled', true);
         breakButton.attr('title', buttonStrings[3]);
@@ -60,11 +58,13 @@
         startButton.attr('title', buttonStrings[3]);
         timerButton.attr('title', buttonStrings[3]);
       }
+      // start the countdown intervals every second
       timerInterval = setInterval(countdown, 1000);
     }
   }
 
   function pauseTimer() {
+    // stop the countdown, session-log the pause, and re-enable the start button
     lastButton = 'pause';
     clearInterval(timerInterval);
     timerInterval = null;
@@ -74,11 +74,14 @@
   }
 
   function resetTimer() {
+    // stop the countdown, check that we haven't already paused the timer for the session log logic
     if (lastButton === 'pause') { logCount--; }
     lastButton = 'reset';
     clearInterval(timerInterval);
     timerInterval = null;
     logEvent('was reset with '+minutes.text()+':'+seconds.text()+' left');
+    // now adust the timer back to the last timer settings,
+    // and re-enable the Start and timer settings buttons
     minutes.text(timerMinutes);
     seconds.text(timerSeconds);
     startButton.attr('disabled', false);
@@ -88,20 +91,27 @@
   }
 
   function setTimer() {
+    // first ask the user for the desired work minutes and convert to a number
     var minutesEnteredAsText = prompt('How many minutes do you want to set for WORK?', '25');
     var minutesEnteredAsNumber = parseInt(minutesEnteredAsText);
+    // now test that the user entered valid input for the work minutes, if not alert and close
     if ( minutesEnteredAsNumber < 4*60 ) {
+      // now pad what the user entered, and change the work timer default for minutes and seconds
       timerMinutes = pad(minutesEnteredAsNumber);
       timerSeconds = '00';
       minutes.text(timerMinutes);
       seconds.text(timerSeconds);
+      // now ask the user for the desired break minutes, and covert it to a number
       minutesEnteredAsText = prompt('How many minutes to you want to set for your BREAK?', '5');
       minutesEnteredAsNumber = parseInt(minutesEnteredAsText);
       if ( minutesEnteredAsNumber < 4*60 ) {
+        // now do the same things for the break timer minutes and seconds
         breakMinutes = pad(minutesEnteredAsNumber);
         breakSeconds = '00';
+        // now record the changed settings
         logEvent('setTimer');
       } else {
+        // since minutes changed, we still record the changed settings
         logEvent('setTimer');
         alertUser('BREAK time');
       }
@@ -109,6 +119,7 @@
       alertUser('WORK or BREAK times');
     }
     function alertUser(varsNotChanged) {
+      // alerts the user to what, if anything, was changed.
       alert('No changes made to '+varsNotChanged+'. Time entered was either invalid or for 4 hours or more. Please try again.');
     }
   }
@@ -131,8 +142,13 @@
         //unhide the break button
         breakButton.show();
         options.hide();
+        // set the break minutes and seconds
+        minutes.text(breakMinutes);
+        seconds.text(breakSeconds);
+        // alert the user to take a break in the tab text
         docTitle.text("Time for a break ;>)");
       } else {
+        // take off break, enable the startButton and disable the break button
         isOnBreak = false;
         startButton.show();
         timerButton.attr('disabled', false);
@@ -140,9 +156,11 @@
         breakButton.hide();
         breakButton.attr('disabled', false);
         breakButton.attr('title', buttonStrings[1]);
+        // set the work minutes and seconds
         minutes.text(timerMinutes);
         seconds.text(timerSeconds);
         options.show();
+        // alert the user to begin work via the tab text
         docTitle.text("Ready to resume? :>)");
       }
       return;
@@ -176,6 +194,7 @@
   }
 
   function setDocTitle() {
+    // decide which label to append to the timer text in the browser tab
     if (isOnBreak) {
       docTitle.text( minutes.text()+':'+seconds.text()+' left (On Break)' );
     } else {
@@ -184,9 +203,12 @@
   }
 
   function logEvent(startEnd) {
+    // collect the current time from the server
     curTime = new Date().toLocaleString();
     if (startEnd === 'began') {
+      // append the event text for the work/break beginning to the bottom the webpage
       pTag = document.createElement('P');
+      // give each session log paragraph an id tag with the current paragraph number
       pTag.id = logCount;
       if (isOnBreak) {
         pTag.appendChild( document.createTextNode( 'Break timer began: '+curTime ) );
@@ -196,16 +218,20 @@
       }
       document.body.appendChild( pTag );
     } else if (startEnd === 'setTimer') {
+      // append any log for changed work/break times to the log as a new paragraph
       pTag = document.createElement('P');
       pTag.id = logCount;
       var logText = 'Timer settings: '+timerMinutes+':'+timerSeconds+' for work, ';
       logText += breakMinutes+':'+breakSeconds+' for your break.';
       pTag.appendChild( document.createTextNode( logText ) );
       document.body.appendChild( pTag );
+      // increment the paragraph count
       logCount++;
     } else {
+      // for pauses and resets, append the event to the start-event paragraph
       pTag = $('#'+logCount);
       pTag.text( pTag.text()+' ..... and '+startEnd+': '+curTime );
+      // increment the paragraph count
       logCount++;
     }
   }
