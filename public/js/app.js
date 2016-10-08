@@ -12,7 +12,6 @@
   var docTitle = $(document).find('title');
   var timerLog = $('#timer-log');
   var curTime = new Date().toLocaleString();
-  var buttonStrings = [startButton.attr('title'), breakButton.attr('title'), timerButton.attr('title'), 'Unavailable while running.'];
   var logCount = 0;
   var pTag;
   var lastButton = '';
@@ -50,15 +49,12 @@
       logEvent('began');
       // use isOnBreak to decide which buttons to disable and adjust the title's
       if (isOnBreak) {
-        breakButton.attr('disabled', true);
-        breakButton.attr('title', buttonStrings[3]);
+        buttonDisabled(breakButton, true);
       } else {
-        startButton.attr('disabled', true);
-        timerButton.attr('disabled', true);
-        pauseButton.attr('disabled', false);
-        resetButton.attr('disabled', false);
-        startButton.attr('title', buttonStrings[3]);
-        timerButton.attr('title', buttonStrings[3]);
+        buttonDisabled(startButton, true);
+        buttonDisabled(timerButton, true);
+        buttonDisabled(pauseButton, false);
+        buttonDisabled(resetButton, false);
       }
       // start the countdown intervals every second
       timerInterval = setInterval(countdown, 1000);
@@ -71,8 +67,7 @@
     clearInterval(timerInterval);
     timerInterval = null;
     logEvent('was paused with '+minutes.text()+':'+seconds.text()+' left');
-    startButton.attr('disabled', false);
-    startButton.attr('title', buttonStrings[0]);
+    buttonDisabled(startButton, false);
   }
 
   function resetTimer() {
@@ -86,10 +81,8 @@
     // and re-enable the Start and timer settings buttons
     minutes.text(timerMinutes);
     seconds.text(timerSeconds);
-    startButton.attr('disabled', false);
-    timerButton.attr('disabled', false);
-    startButton.attr('title', buttonStrings[0]);
-    timerButton.attr('title', buttonStrings[2]);
+    buttonDisabled(startButton, false);
+    buttonDisabled(timerButton, false);
   }
 
   function setTimer() {
@@ -139,8 +132,7 @@
       if (!isOnBreak) {
         // hide the start button
         startButton.hide();
-        startButton.attr('disabled', false);
-        startButton.attr('title', buttonStrings[0]);
+        buttonDisabled(startButton, false);
         //unhide the break button
         breakButton.show();
         options.hide();
@@ -153,13 +145,11 @@
         // take off break, enable the startButton and disable the break button
         isOnBreak = false;
         startButton.show();
-        timerButton.attr('disabled', false);
-        timerButton.attr('title', buttonStrings[2]);
+        buttonDisabled(timerButton, false);
         breakButton.hide();
-        breakButton.attr('disabled', false);
-        breakButton.attr('title', buttonStrings[1]);
-        pauseButton.attr('disabled', true);
-        resetButton.attr('disabled', true);
+        buttonDisabled(breakButton, false);
+        buttonDisabled(pauseButton, true);
+        buttonDisabled(resetButton, true);
         // set the work minutes and seconds
         minutes.text(timerMinutes);
         seconds.text(timerSeconds);
@@ -239,7 +229,21 @@
       logCount++;
     }
   }
-  function buttonDisabled(buttton, isDisabled) {
+  function buttonDisabled(button, isDisabled) {
+    var buttonTitles = {start: "Click to start the work timer.", break: "Click to start the work timer.",
+      timer: "Click to change the work/break timer durations in minutes.",
+      pause: "Click to pause the timer.", reset: "Click to reset the timer.",
+      running: "Unavailable while running.", idle: "Unavailable while timer is idle."};
 
+    button.attr("disabled", isDisabled);
+    if (isDisabled) {
+      if (button.attr("id") === "pause" || button.attr("id") === "reset") {
+        button.attr("title", buttonTitles.idle);
+      } else {
+        button.attr("title", buttonTitles.running);
+      }
+    } else {
+      button.attr("title", buttonTitles[button.attr("id")]);
+    }
   }
 }());
