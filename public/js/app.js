@@ -5,7 +5,7 @@
   var breakButton = $('#break');
   var pauseButton = $('#pause');
   var resetButton = $('#reset');
-  var timerButton = $('#set-timer');
+  var timerButton = $('#set_timer');
   var options = $('#options');
   var seconds = $('#seconds');
   var minutes = $('#minutes');
@@ -133,6 +133,7 @@
         // hide the start button
         startButton.hide();
         buttonDisabled(startButton, false);
+        buttonDisabled(timerButton, false);
         //unhide the break button
         breakButton.show();
         options.hide();
@@ -234,21 +235,22 @@
      the titles/tooltips to reflect help user understand the timer functions. */
     var buttonTitles = {
       start: "Click to start the work timer.", break: "Click to start the work timer.",
-      timer: "Click to change the work/break timer durations in minutes.",
+      set_timer: "Click to change the work/break timer durations in minutes.",
       pause: "Click to pause the timer.", reset: "Click to reset the timer.",
       running: "Unavailable while running.", idle: "Unavailable while timer is idle."
     };
 
     button.attr("disabled", isDisabled); // enables/disables the button passed in.
+    var bid = button.attr("id");
     if (isDisabled) {
       // if disabled && the button is the pause or reset button, use the idle title.
-      if (button.attr("id") === "pause" || button.attr("id") === "reset") {
+      if (bid === "pause" || bid === "reset") {
         button.attr("title", buttonTitles.idle);
       } else {
         button.attr("title", buttonTitles.running); // else use the running title.
       }
     } else { // if not disabled, reset the button title to describe its function.
-      button.attr("title", buttonTitles[button.attr("id")]);
+      button.attr("title", buttonTitles[bid]);
     }
   }
 }());
