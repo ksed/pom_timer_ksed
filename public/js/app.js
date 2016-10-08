@@ -72,7 +72,7 @@
 
   function resetTimer() {
     // stop the countdown, check that we haven't already paused the timer for the session log logic
-    if (lastButton === 'pause') { logCount--; }
+    if (lastButton === 'pause') { logCount -= 1; }
     lastButton = 'reset';
     clearInterval(timerInterval);
     timerInterval = null;
@@ -220,7 +220,7 @@
       pTag.appendChild( document.createTextNode( logText ) );
       document.body.appendChild( pTag );
       // increment the paragraph count
-      logCount++;
+      logCount += 1;
     } else {
       // for pauses and resets, append the event to the start-event paragraph
       pTag = $('#'+logCount);
@@ -230,19 +230,24 @@
     }
   }
   function buttonDisabled(button, isDisabled) {
-    var buttonTitles = {start: "Click to start the work timer.", break: "Click to start the work timer.",
+    /* This function helps enable/disable all the timer buttons, and change
+     the titles/tooltips to reflect help user understand the timer functions. */
+    var buttonTitles = {
+      start: "Click to start the work timer.", break: "Click to start the work timer.",
       timer: "Click to change the work/break timer durations in minutes.",
       pause: "Click to pause the timer.", reset: "Click to reset the timer.",
-      running: "Unavailable while running.", idle: "Unavailable while timer is idle."};
+      running: "Unavailable while running.", idle: "Unavailable while timer is idle."
+    };
 
-    button.attr("disabled", isDisabled);
+    button.attr("disabled", isDisabled); // enables/disables the button passed in.
     if (isDisabled) {
+      // if disabled && the button is the pause or reset button, use the idle title.
       if (button.attr("id") === "pause" || button.attr("id") === "reset") {
         button.attr("title", buttonTitles.idle);
       } else {
-        button.attr("title", buttonTitles.running);
+        button.attr("title", buttonTitles.running); // else use the running title.
       }
-    } else {
+    } else { // if not disabled, reset the button title to describe its function.
       button.attr("title", buttonTitles[button.attr("id")]);
     }
   }
